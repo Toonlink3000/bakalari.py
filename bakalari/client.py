@@ -16,6 +16,10 @@ class authenticated_method():
 
 		return result
 
+class test_decorator():
+	def __init__(self, function):
+		self.function = function
+
 def get_city_json():
 	request = requests.get("https://sluzby.bakalari.cz/api/v1/municipality", headers={"Accept":"application/json"})
 
@@ -62,7 +66,7 @@ class Client():
 			client.user_id = value["bak:UserId"]
 			client.app_version = value["bak:AppVersion"]
 			client.access_token = value["access_token"]
-			client.refresh_token = value["refresh_token"]
+			client.refresh_tokben = value["refresh_token"]
 			client.expiration_date = value["expires_in"]
 			client.scope = value["scope"]
 
@@ -76,7 +80,7 @@ class Client():
 			"Content-Type": "application/x-www-form-urlencoded",
 			"Authorization": f"Bearer {self.access_token}"
 		}
-		request = requests.get(, headers)
+		request = requests.get(self.api_adress, headers)
 
 	def logout(self):
 		pass
