@@ -9,3 +9,8 @@ class NotAuthenticatedError(Exception):
 
 class ConnectionFailedError(Exception):
 	pass
+
+class UnauthorisedAccessError(Exception):
+	def __str__(self):
+		return "bakalari.py Error, invalid access token provided when connecting."
+		

@@ -1,6 +1,6 @@
 import requests
 import user
-from exceptions import NotAuthenticatedError
+from exceptions import NotAuthenticatedError, UnauthorisedAccessError
 
 class authenticated_method():
 	def __init__(self, func):
@@ -75,12 +75,18 @@ class Client():
 		return client
 
 	@authenticated_method
-	def get_user(self) -> user.User:
+	def get_user_info(self) -> user.User:
 		head = {
 			"Content-Type": "application/x-www-form-urlencoded",
 			"Authorization": f"Bearer {self.access_token}"
 		}
 		request = requests.get(self.api_adress, headers)
+		if request.status == 200:
+			return request.json()
+
+		elif request.status == 401:
+			self.authenticated = False
+			raise UnauthorisedAccessError
 
 	def logout(self):
 		pass
