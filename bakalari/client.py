@@ -1,24 +1,8 @@
 import requests
-import user
-from exceptions import NotAuthenticatedError, UnauthorisedAccessError
+import user_info
+from exceptions import NotAuthenticatedError, UnauthorisedAccessError, IncorrectLoginError
+from utils import authenticated_method
 
-class authenticated_method():
-	def __init__(self, func):
-		self.func = func
-
-	def __call__(self, parent_class, *args, **kwargs):
-		if parent_class.authenticated == True:
-			result = self.func(parent_class, *args, **kwargs)
-
-		else:
-			raise NotAuthenticatedError(type(parent_class).__name__, parent_class.__name__, self.func.__name__)
-			raise
-
-		return result
-
-class test_decorator():
-	def __init__(self, function):
-		self.function = function
 
 def get_city_json():
 	request = requests.get("https://sluzby.bakalari.cz/api/v1/municipality", headers={"Accept":"application/json"})
@@ -39,6 +23,12 @@ def get_campaign_banners(location:str, category_code:str):
 		return result
 
 	return result["banners"]
+
+class Class():
+	def __init__(self, json):
+		self.id = json["Id"]
+		self.abreviated = json["Abbrev"]
+		self.name = json["Name"]
 
 class Client():
 	authenticated = False
@@ -72,21 +62,31 @@ class Client():
 
 			client.authenticated = True
 
+		client.get_user_info()
 		return client
 
 	@authenticated_method
-	def get_user_info(self) -> user.User:
+	def get_user_info(self) -> None:
 		head = {
 			"Content-Type": "application/x-www-form-urlencoded",
 			"Authorization": f"Bearer {self.access_token}"
 		}
 		request = requests.get(self.api_adress, headers)
 		if request.status == 200:
-			return request.json()
+			self._user_json = request
 
 		elif request.status == 401:
 			self.authenticated = False
 			raise UnauthorisedAccessError
 
-	def logout(self):
+	def _merge_data_into_object(self):
 		pass
+
+	def get_class(self) -> Class:
+		return Class(self._user_json["Class"])
+
+	def get_enabled_modules(self) -> dict:
+		result = {}
+		for element in self._user_json["EnabledModules"]:
+			result[element["Module"]] = element["Rights"]
+		

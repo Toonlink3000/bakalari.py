@@ -14,3 +14,8 @@ class UnauthorisedAccessError(Exception):
 	def __str__(self):
 		return "bakalari.py Error, invalid access token provided when connecting."
 		
+class IncorrectLoginError(Exception):
+	def __init__(self, error):
+		self.error = error
+	def __str__(self):
+		return "bakalari.py login Error: {}".format(self.error)
