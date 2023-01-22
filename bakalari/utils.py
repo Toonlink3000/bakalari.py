@@ -13,3 +13,9 @@ class authenticated_method():
 			raise
 
 		return result
+
+class BakalariModule():
+	def __init__(self, parent):
+		self.client = parent
+
+		cunfus

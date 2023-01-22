@@ -1,6 +1,6 @@
 import requests
 import user_info
-from exceptions import NotAuthenticatedError, UnauthorisedAccessError, IncorrectLoginError
+from exceptions import BakalariGeneralError
 from utils import authenticated_method
 
 
@@ -23,12 +23,6 @@ def get_campaign_banners(location:str, category_code:str):
 		return result
 
 	return result["banners"]
-
-class Class():
-	def __init__(self, json):
-		self.id = json["Id"]
-		self.abreviated = json["Abbrev"]
-		self.name = json["Name"]
 
 class Client():
 	authenticated = False
@@ -66,27 +60,24 @@ class Client():
 		return client
 
 	@authenticated_method
-	def get_user_info(self) -> None:
-		head = {
-			"Content-Type": "application/x-www-form-urlencoded",
-			"Authorization": f"Bearer {self.access_token}"
-		}
-		request = requests.get(self.api_adress, headers)
-		if request.status == 200:
-			self._user_json = request
-
-		elif request.status == 401:
-			self.authenticated = False
-			raise UnauthorisedAccessError
-
-	def _merge_data_into_object(self):
+	def get_module(self):
 		pass
 
-	def get_class(self) -> Class:
-		return Class(self._user_json["Class"])
+	@authenticated_method
+	def do_authenticated_request(self, adress, type , head={}, data={}):
+		head["Authorization"] = self.access_token
+		if type == "get":
+			result = requests.get(self.api_adress + adress, headers=head, data=data)
 
-	def get_enabled_modules(self) -> dict:
-		result = {}
-		for element in self._user_json["EnabledModules"]:
-			result[element["Module"]] = element["Rights"]
+			return result.json()
+
+		elif type == "post":
+			result = requests.post(self.api_adress + adress, headers=head, data=data)
+			return result.json()
+
+		else:
+			raise BakalariGeneralError("invalid request type passed.")
+
 		
+if __name__ == "__main__":
+	print("this module is not intended to be run as main")

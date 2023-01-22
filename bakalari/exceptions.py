@@ -19,3 +19,10 @@ class IncorrectLoginError(Exception):
 		self.error = error
 	def __str__(self):
 		return "bakalari.py login Error: {}".format(self.error)
+
+class BakalariGeneralError(Exception):
+	def __init__(self, message:str):
+		self.message = message
+
+	def __str__(self):
+		return f"bakalari.py Error: {self.message}"
